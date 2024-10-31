@@ -1,0 +1,14 @@
+{% macro pagination_link(page_number) %}
+    {# Create a copy of the current query parameters #}
+    {% set query_params = request.args.to_dict(flat=False) %}
+
+    {# Remove the 'submitted' parameter to indicate this is not a form submission #}
+    {% set _ignore = query_params.pop('submitted', None) %}
+
+    {# Manually create an updated dictionary with the page number #}
+    {% set updated_params = query_params.copy() %}
+    {% set _ignore = updated_params.update({'page': [page_number]}) %}
+
+    {# Construct the URL with the updated query parameters #}
+    {{ url_for(request.endpoint, **updated_params) }}
+{% endmacro %}

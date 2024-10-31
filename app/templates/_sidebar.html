@@ -1,0 +1,58 @@
+<div class="sidebar p-3" style="text-align: center;">
+    <form method="POST" action="{{ url_for('main.search') }}">
+        <button type="submit" class="btn btn-primary mb-3 w-100">Search Data</button>
+    </form>
+    <h2>Categories</h2>
+    <ul class="list-group sidebar-list">
+        <!-- List of categories (will be dynamically generated) -->
+        {% for cat in cat_list %}
+            <li class="list-group-item">
+                <a href="{{ url_for('main.search_results', pnns_groups_1=cat, submitted='true') }}" class="text-decoration-none">{{ cat }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <br><h2>Nutriscore</h2>
+    <ul class="list-group sidebar-list">
+        <!-- List of Nutriscore Grades -->
+        <li class="list-group-item">
+            <a href="{{ url_for('main.search_results', nutriscore_grades='a', submitted='true') }}" class="text-decoration-none">Grade A</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('main.search_results', nutriscore_grades='b', submitted='true') }}" class="text-decoration-none">Grade B</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('main.search_results', nutriscore_grades='c', submitted='true') }}" class="text-decoration-none">Grade C</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('main.search_results', nutriscore_grades='d', submitted='true') }}" class="text-decoration-none">Grade D</a>
+        </li>
+        <li class="list-group-item">
+            <a href="{{ url_for('main.search_results', nutriscore_grades='e', submitted='true') }}" class="text-decoration-none">Grade E</a>
+        </li>
+    </ul>
+</div>
+
+<style>
+    .sidebar {
+        padding-top: 20px;
+        text-align: center;
+    }
+    .sidebar-list {
+        max-height: calc(100vh - 100px); /* Adjust based on the height of the top banner */
+        overflow-y: auto;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+    .sidebar-list .list-group-item {
+        border: none;
+    }
+    .sidebar-list .list-group-item a {
+        color: inherit; /* Maintain the text color */
+        text-decoration: none; /* Remove underline */
+    }
+    .sidebar-list .list-group-item a:hover {
+        text-decoration: underline; /* Add underline on hover */
+    }
+</style>

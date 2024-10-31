@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Search Products{% endblock %}
+
+{% block content %}
+<div class="container-fluid big-content-block">
+    <div class="row">
+        <!-- Left Sidebar -->
+        <div class="col-md-2 sidebar-container">
+            {% include '_sidebar.html' %}
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="col-md-10 main-content">
+            <h2 class="mt-4">Search Products</h2><br>
+            <form method="GET" action="{{ url_for('main.search_results') }}">
+                <!-- Search Bar with Column Checkboxes -->
+                <div class="form-group">
+                    <label for="search-term">Search</label>
+
+                    <!-- Hidden Input for Submission -->
+                    <input type="hidden" name="submitted" value="true">
+                    
+                    <input type="text" class="form-control" id="search-term" name="search_term" placeholder="Enter a search term">
+                    <div class="mt-2">
+                        <br><label><b>Search in:</b></label><br>
+                        <input type="checkbox" name="search_columns" value="product_name" checked> Product Name<br>
+                        <input type="checkbox" name="search_columns" value="brands"> Brands<br>
+                        <input type="checkbox" name="search_columns" value="categories"> Categories<br>
+                    </div>
+                </div>
+
+                <!-- Nutriscore Grade Checkboxes -->
+                <div class="form-group">
+                    <br><label><b>Nutriscore Grades</b></label><br>
+                    {% for grade in nutriscore_grades %}
+                        <input type="checkbox" name="nutriscore_grades" value="{{ grade }}" checked }> 
+                        Grade {{ grade | upper }}<br>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-button">
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>            
+        </div>
+    </div>
+</div>
+
+<style>
+    .row {
+        padding: 0px;
+        margin: 0px;
+    }
+    .sidebar-container {
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+    .big-content-block {
+        padding-top: 0px;
+    }
+    .main-content {
+        padding-right: 20px;
+        padding-left: 0px;
+        text-align: center;
+    }
+    .form-group {
+        padding-left: 400px;
+        padding-right: 400px;
+    }
+    .form-button {
+        text-align: center;
+    }
+</style>
+
+<!-- JavaScript for Check All/Uncheck All functionality -->
+<script>
+    function checkAllCountries(check) {
+        let checkboxes = document.getElementsByName('countries');
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = check;
+        }
+    }
+</script>
+{% endblock %}

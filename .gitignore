@@ -160,3 +160,15 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# AI Models
+app/ai-model/
+
+# Files in static to ignore
+app/static/openfoodfact_clean.csv
+app/static/Confusion Matrix.png
+app/static/loading.webp
+
+# Test files to ignore
+app/modules/test_ai_models.py
+app/modules/test_ai_models_with_pipelines.py

@@ -1,0 +1,53 @@
+{% from '_pagination_macro.html' import pagination_link %}
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <!-- Previous Page Link -->
+        {% if page > 1 %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ pagination_link(page-1) }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        <!-- First Page Link -->
+        {% if page > 3 %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ pagination_link(1) }}">1</a>
+            </li>
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+
+        <!-- Page Numbers Around Current Page -->
+        {% for p in range(page - 2, page + 3) %}
+            {% if p > 0 and p <= total_pages %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link"
+                       href="{{ pagination_link(p) }}">{{ p }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Last Page Link -->
+        {% if page < total_pages - 2 %}
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ pagination_link(total_pages) }}">{{ total_pages }}</a>
+            </li>
+        {% endif %}
+
+        <!-- Next Page Link -->
+        {% if page < total_pages %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="{{ pagination_link(page+1) }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Nutriscore AI Prediction{% endblock %}
+
+{% block content %}
+<div class="full-height-container d-flex flex-column">
+    <div class="row flex-grow-1 d-flex justify-content-center align-items-center">
+        <div class="col-md-12 text-center">
+            <div class="container">
+                <img src="{{ url_for('static', filename='loading.gif') }}" alt="Loading animation" style="max-width: 100%; height: auto; margin-bottom: 0px;">
+                <h1>Loading Training Data...</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .full-height-container {
+        height: calc(100vh - 50px); /* Full viewport height minus the height of the top banner */
+    }
+    .container {
+        text-align: center;
+        transform: translateY(-50px);
+    }
+    .row {
+        margin: 0;
+    }
+</style>
+
+<!-- Adding JavaScript for checking task status -->
+<script>
+    function checkTaskStatus() {
+        fetch('/loading-dataframe-status')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.complete) {
+                    window.location.href = "{{ url_for('main.training_data') }}";
+                } else {
+                    setTimeout(checkTaskStatus, 1000); // Check again after 1 second
+                }
+            });
+    }
+
+    window.onload = checkTaskStatus;
+</script>
+{% endblock %}

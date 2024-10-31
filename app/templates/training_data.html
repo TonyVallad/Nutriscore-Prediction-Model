@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Training Data{% endblock %}
+
+{% block content %}
+<div class="container-fluid big-content-block">
+    <div class="row">
+        <!-- Left Sidebar -->
+        <div class="col-md-2 sidebar-container">
+            {% include '_sidebar.html' %}
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="col-md-10 main-content">
+            <div class="content p-3 main-content-block">
+                <h2>Product List</h2> ({{ total_products }} products)
+
+                <!-- Pagination -->
+                {% include '_pagination.html' %}
+
+                <!-- Products Table -->
+                <div class="product-list">
+                    {% for product in products %}
+                        <!-- Product Item -->
+                        <div class="product-item">
+                            <!-- Product Image -->
+                            <div class="image-column" style="width: 150px; text-align: center;">
+                                {% if product.image_url %}
+                                    <img src="{{ product.image_url }}" alt="No Image" class="product-image">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='no-image.png') }}" alt="No Image Available" class="product-image">
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Information -->
+                            <div class="product-info">
+                                <h4 style="color: red;">{{ product.product_name }}</h4>
+                                <p><strong style="color: royalblue;">{{ product.pnns_groups_1 }}</strong> - {{ product.pnns_groups_2 }}</p>
+                                <p><strong>Quantity:</strong> {{ product.quantity }}</p>
+                                <p><strong>Code:</strong> {{ product.code }}</p>
+                                <p><strong>Brands:</strong> {{ product.brands }}</p>
+                            </div>
+
+                            <!-- Nutriscore Image -->
+                            <div class="nutriscore-image">
+                                <a href="{{ product.url }}" target="_blank" style="color: black;">
+                                    <img src="{{ url_for('static', filename='nutriscore-' ~ product.nutriscore_grade ~ '-new-en.svg') }}" alt="Nutriscore" class="nutriscore-image">
+                                    <p><strong>Nutriscore:</strong> {{ product.nutriscore_score | int }}</p>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% include '_pagination.html' %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .row {
+        padding: 0px;
+        margin: 0px;
+    }
+    .sidebar-container {
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+    .big-content-block {
+        padding-top: 0px;
+    }
+    .main-content {
+        padding-right: 20px;
+        padding-left: 0px;
+    }
+    .main-content-block {
+        padding: 0px;
+        margin: 0px;
+    }
+    .product-image {
+        max-height: 150px; /* Set maximum height */
+        max-width: 150px;  /* Set maximum width */
+        width: auto;       /* Maintain aspect ratio */
+        height: auto;      /* Maintain aspect ratio */
+    }
+    .product-info {
+        margin-left: 20px;
+    }
+    .product-info h4 {
+        margin: 0;
+        font-size: 1.2em;
+    }
+    .product-info p {
+        margin: 0;
+    }
+    .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: white;
+    }
+    .nutriscore-image {
+        margin-left: auto; /* Pushes the Nutriscore image to the far right */
+        width: 200px;
+        text-align: center;
+    }
+    .nutriscore-image img {
+        max-width: 150px; /* Adjust width as needed */
+        height: auto; /* Maintain aspect ratio */
+    }
+</style>
+{% endblock %}

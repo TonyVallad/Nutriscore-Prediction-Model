@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Nutriscore AI Prediction{% endblock %}
+
+{% block content %}
+<div class="full-height-container d-flex flex-column">
+    <div class="row flex-grow-1 d-flex justify-content-center align-items-center">
+        <div class="col-md-12 text-center">
+            <div class="container">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Site Logo" style="max-width: 100%; height: auto; margin-bottom: 0px;">
+                <h1>Nutriscore AI Prediction</h1>
+
+                <!-- Buttons Section -->
+                <div class="button-section" style="margin-top: 20px;">
+                    <a href="{{ url_for('main.predict') }}"><button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size: 16px; margin-top: 20px; cursor: pointer; border-radius: 5px;">AI Prediction</button></a>
+                    <a href="{{ url_for('main.training_data') }}"><button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; font-size: 16px; margin-top: 20px; cursor: pointer; border-radius: 5px;">Browse Training Data</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .full-height-container {
+        height: calc(100vh - 50px); /* Full viewport height minus the height of the top banner */
+    }
+    .container {
+        text-align: center;
+        transform: translateY(-50px);
+    }
+    .row {
+        margin: 0;
+    }
+</style>
+{% endblock %}
