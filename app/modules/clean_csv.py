@@ -5,12 +5,21 @@ from app.modules.analyse_countries import clean_countries
 
 def read_csv_chunks(file_path, selected_columns, chunk_size):
     """
-    Read a CSV file in chunks and return a list of DataFrame chunks.
+    Reads a CSV file in chunks and optionally selects specific columns.
 
-    :param file_path: The path to the CSV file to be read.
-    :param selected_columns: A list of column names to be read from the CSV file.
-    :param chunk_size: The number of rows per chunk to be read from the CSV file.
-    :return: A list of DataFrame chunks, each containing the selected columns from the CSV file.
+    This function reads a CSV file at the specified file path in chunks of a
+    given size, using a progress bar to indicate the reading process. If a list
+    of selected columns is provided, only those columns will be read from the
+    file.
+
+    Parameters:
+    file_path (str): The path to the CSV file to be read.
+    selected_columns (list): A list of columns to select from the CSV file. If
+                             empty, all columns are read.
+    chunk_size (int): The number of rows per chunk to be read from the CSV file.
+
+    Returns:
+    list: A list of DataFrames, each corresponding to a chunk of the CSV file.
     """
 
     # Printing reading csv chunks message
@@ -48,15 +57,25 @@ def read_csv_chunks(file_path, selected_columns, chunk_size):
 
 def filter_and_clean_data(dataframes, selected_columns, cols_stat, nutri_ok):
     """
-    Filter and clean a list of pandas DataFrame objects.
+    Filters and cleans the data by:
 
-    :param dataframes: List of pandas DataFrame objects to be filtered and cleaned.
-    :param selected_columns: List of column names to retain in the DataFrame after filtering.
-    :param cols_stat: List of column names where missing values should be filled with 0.
-    :param nutri_ok: List of acceptable 'nutriscore_grade' values to retain in the filtered DataFrame.
-    :return: Concatenated and cleaned DataFrame comprising only the specified columns and filtered by acceptable 'nutriscore_grade' values.
+    1. Removing rows with missing 'nutriscore_score' and 'nutriscore_grade'.
+    2. Selecting only the specified columns.
+    3. Keeping only rows with 'nutriscore_grade' values that are in the acceptable list (nutri_ok).
+    4. Replacing any missing values in columns listed in cols_stat with 0.
+    5. Cleaning the country names.
+
+    Parameters:
+        dataframes (list): A list of DataFrames to be filtered and cleaned.
+        selected_columns (list): List of column names to be selected.
+        cols_stat (list): List of column names where missing values should be replaced with 0.
+        nutri_ok (list): List of acceptable 'nutriscore_grade' values.
+
+    Returns:
+        pandas.DataFrame: The filtered and cleaned DataFrame.
     """
 
+    # Prints filtering and cleaning data message
     print("\n\033[93mFiltering and cleaning data...\033[0m")
 
     # Filter rows where 'nutriscore_score' and 'nutriscore_grade' are not missing, and select specified columns
@@ -81,12 +100,20 @@ def filter_and_clean_data(dataframes, selected_columns, cols_stat, nutri_ok):
 
 def read_and_clean_csv():
     """
-    Clean a CSV file by reading it in chunks, filtering, and cleaning the data according to specified configurations,
-    and then outputting the cleaned data to a new CSV file.
+    Reads the original CSV file in chunks, filters and cleans the data by selecting only the specified columns,
+    removing rows with missing 'nutriscore_score' and 'nutriscore_grade', keeping only rows with 'nutriscore_grade' values
+    that are in the acceptable list (nutri_ok), replacing any missing values in columns listed in cols_stat with 0, and
+    cleaning the country names. Finally, saves the cleaned DataFrame to a new CSV file with tab-separated values and
+    without the index column.
 
-    :return: None
+    Parameters:
+        None
+
+    Returns:
+        None
     """
 
+    # Prints reading and cleaning csv message
     print("\n\033[93mReading and cleaning CSV...\033[0m")
 
     # Define the path to the original CSV file using configuration settings
@@ -111,5 +138,6 @@ def read_and_clean_csv():
 
     print("\n\033[93mCSV cleaned and read\033[0m")
 
+# Handles direct execution of this script
 if __name__ == '__main__':
    read_and_clean_csv()

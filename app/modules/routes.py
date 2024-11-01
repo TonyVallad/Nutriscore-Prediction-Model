@@ -11,27 +11,62 @@ import joblib
 
 main = Blueprint('main', __name__)
 
+# Check loading status
 @main.route('/loading-dataframe-status', methods=['GET', 'POST'])
 def loading_dataframe_status_check():
+    """
+    Endpoint to check the loading status of the dataframe.
+
+    This route handles both GET and POST requests to check the current status
+    of the dataframe loading process. The status is stored in the application's
+    configuration and indicates whether the loading has been completed.
+
+    Returns:
+        JSON: A JSON object containing the loading status.
+    """
+
     return jsonify(current_app.config['loading_dataframe_status'])
 
+# Home Route
 @main.route('/', methods=['GET', 'POST'])
 def index():
+    """
+    The home route of the application, which renders the index.html template.
+
+    Returns:
+        HTML: The rendered index.html template.
+    """
+
     # Send to index.html
     return render_template('index.html')
 
 # Check if model exists
 def model_exists():
+    """
+    Check if the trained machine learning model exists.
+
+    Returns:
+        bool: True if the model file exists, False otherwise.
+    """
+
     model_path = os.path.join('app', 'ai-model', 'model.pkl')
+    
     return os.path.exists(model_path)
 
+# Predict Route
 @main.route('/predict', methods=['GET', 'POST'])
 def predict():
     """
-    Handles HTTP GET and POST requests for predicting nutritional scores.
+    Handles requests to predict the Nutri-Score for a product based on its nutritional information.
 
-    :return: Renders the prediction form template with the form object.
+    This function checks if the required data and model components are loaded in the application
+    configuration. If not, it loads them. It then initializes the prediction form and handles form
+    submissions to predict the Nutri-Score of a product using a trained machine learning model.
+
+    Returns:
+        Renders the prediction form template with the form object and predicted score.
     """
+
     # Check if the dataframe is already loaded
     if 'PRODUCTS_DF' not in current_app.config:
         current_app.config['PRODUCTS_DF'] = load_dataframe()
@@ -46,8 +81,8 @@ def predict():
     label_encoder_path = os.path.join('app', 'ai-model', 'label_encoder_pnns.pkl')
     ordinal_encoder_path = os.path.join('app', 'ai-model', 'ordinal_encoder_grade.pkl')
 
+    # If model or scaler does not exist, create and train the model
     if not os.path.exists(model_path) or not os.path.exists(scaler_path):
-        # If model or scaler does not exist, create and train the model
         df, label_encoder_pnns, ordinal_encoder_grade = load_and_preprocess_data()
         train_model(df, label_encoder_pnns, ordinal_encoder_grade)
 
@@ -57,11 +92,14 @@ def predict():
     label_encoder = joblib.load(label_encoder_path)
     ordinal_encoder = joblib.load(ordinal_encoder_path)
 
+    # Initialize the form
     form = NutriScoreForm()
     form.pnns_groups_1.choices = [(group, group) for group in pnns_groups_list]
 
+    # Initialize the predicted score
     predicted_score = None
 
+    # Handle form submission
     if form.validate_on_submit():
         try:
             # Collect form data into a DataFrame
@@ -120,8 +158,18 @@ def predict():
 
     return render_template('prediction_form.html', form=form, pnns_groups_list=pnns_groups_list, predicted_score=predicted_score)
 
+# Loading Data Route
 @main.route('/loading_data')
 def loading_data():
+    """
+    Set the status to indicate that loading has not yet completed, then start a new thread
+    to run the load_dataframe function. This function is called when the user navigates to
+    the /loading_data route.
+
+    Returns:
+        HTML: The loading_dataframe.html template.
+    """
+
     # Set the status to indicate that loading has not yet completed
     current_app.config['loading_dataframe_status'] = {"complete": False}
 
@@ -138,9 +186,24 @@ def loading_data():
 
     return render_template('loading_dataframe.html')
 
+
+# Training Data Route
 @main.route('/training_data')
 def training_data():
-    #Checks if the dataframe is already loaded:
+    """
+    Displays the training data in a paginated format.
+
+    If the products DataFrame has not been loaded, redirects to the 'Loading dataframe' template.
+
+    Otherwise, retrieves the products DataFrame from the app config, paginates it, and
+    extracts unique Nutriscore grades and categories. Passes these to the 'training_data.html'
+    template to render the page.
+
+    Returns:
+        HTML: The 'training_data.html' template.
+    """
+
+    # Checks if the dataframe is already loaded
     if 'PRODUCTS_DF' not in current_app.config:
         # Send to a 'Loading dataframe' template
         return redirect(url_for('main.loading_data'))
@@ -161,8 +224,10 @@ def training_data():
     end_index = start_index + per_page
     paginated_products = products.iloc[start_index:end_index].to_dict(orient='records')
 
+    # Extract unique Nutriscore grades, sorted alphabetically
     nutriscore_grades = sorted(products['nutriscore_grade'].dropna().unique())  # Extract unique values and sort alphabetically
 
+    # Retrieve all unique Categories for the sidebar
     cat_list = sorted(products['pnns_groups_1'].dropna().unique())  # Extract unique values and sort alphabetically
 
     return render_template('training_data.html',
@@ -176,7 +241,19 @@ def training_data():
 # Search Route
 @main.route('/search', methods=['GET', 'POST'])
 def search():
-    # Get the DataFrame from the app config
+    """
+    Displays the search page with a search form and a sidebar containing
+    unique Categories and Nutriscore grades.
+
+    Retrieves the products DataFrame from the app config, extracts unique
+    Nutriscore grades and categories, and passes them to the 'search.html'
+    template to render the page.
+
+    Returns:
+        HTML: The 'search.html' template.
+    """
+
+    # Loads the products DataFrame from the app config
     products = current_app.config['PRODUCTS_DF']
     
     # Extract unique Nutriscore grades, sorted alphabetically
@@ -189,14 +266,34 @@ def search():
                            nutriscore_grades=nutriscore_grades,
                            cat_list=cat_list)
 
+# Search Results Route
 @main.route('/search_results', methods=['GET'])
 def search_results():
+    """
+    Handles the search results for products based on user-submitted search criteria.
+
+    Retrieves the products DataFrame from the app config and checks if the search form
+    was explicitly submitted. If submitted, filters the products based on the search
+    parameters such as search term, selected columns, Nutriscore grades, and categories.
+    The filtered results are saved to the app config for future reference.
+
+    If no new search is performed, uses the existing search results stored in the app config.
+    Also retrieves unique Nutriscore grades and categories for sidebar display.
+
+    The results are paginated and rendered in the 'search_results.html' template.
+
+    Returns:
+        HTML: The 'search_results.html' template with paginated search results,
+              category list, Nutriscore grades, and pagination metadata.
+    """
+
     # Get the DataFrame from the app config
     products = current_app.config['PRODUCTS_DF']
 
     # Check if the form was explicitly submitted
     form_submitted = request.args.get('submitted', '') == 'true'
 
+    # Handle form submission
     if form_submitted:
         # Perform a new search based on the form parameters
         search_results = products

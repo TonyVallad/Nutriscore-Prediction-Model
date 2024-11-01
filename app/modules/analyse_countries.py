@@ -8,10 +8,22 @@ from config import Config
 
 def fetch_countries_en():
     """
-    Fetches a list of country names in English from a specified API URL.
+    Fetches a list of country names in English from an external API.
 
-    :return: List of country names in English if the response is JSON. If the response is not JSON or an error occurs, appropriate error messages are printed.
+    This function sends a GET request to the API specified by the COUNTRIES_EN_API_URL
+    in the Config. It checks the response status and ensures that the response is in
+    JSON format. If successful, it extracts the common name of each country from the
+    response and returns them as a list.
+
+    Returns:
+        list: A list of country names in English if the request is successful and the
+        response is in JSON format. Prints an error message otherwise.
+
+    Exceptions:
+        Prints error messages for HTTP errors, request exceptions, and JSON decoding errors.
     """
+
+    # API handler
     try:
         response = requests.get(Config.COUNTRIES_EN_API_URL)
         response.raise_for_status()  # Vérifie si la requête a réussi (status code 200)
@@ -31,18 +43,26 @@ def fetch_countries_en():
     except ValueError as json_err:
         print(f"Erreur de décodage JSON: {json_err}")
 
-
 def clean_countries(dataframe, column_name):
     """
-    Cleans country names in a DataFrame by splitting and exploding them, stripping extra spaces, and normalizing to lowercase.
-    It then maps the cleaned country names to their English counterparts using an API.
-    NaN values are replaced with a specified unknown string.
-    The cleaned data is saved to a CSV file.
+    Cleans the country names in a DataFrame.
 
-    :param dataframe: The DataFrame containing country names to be cleaned.
-    :param column_name: The specific column in the DataFrame to be cleaned.
-    :return: The cleaned DataFrame with country names processed to ensure consistency and validity.
+    This function splits and explodes the country names in the specified column of the 
+    DataFrame so that each country name becomes a separate row. It normalizes the country 
+    names by trimming spaces and converting them to lowercase. It then matches these names 
+    against a list of country names in English obtained from an external API, replacing 
+    unmatched names with a default unknown string. The function handles NaN values by 
+    filling them with the unknown string. Finally, it saves the cleaned column to a CSV 
+    file.
+
+    Parameters:
+        dataframe (pandas.DataFrame): The DataFrame containing the country names.
+        column_name (str): The name of the column to clean.
+
+    Returns:
+        pandas.DataFrame: The DataFrame with cleaned country names.
     """
+
     # Divise et explode pour obtenir chaque pays comme une ligne séparée
     dataframe[column_name] = dataframe[column_name].str.split(',')
     dataframe = dataframe.explode(column_name)

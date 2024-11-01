@@ -19,7 +19,11 @@ def load_dataframe():
     Returns:
     pandas.DataFrame: A DataFrame containing the data from the CSV file.
     """
+
+    # Prints loading status in terminal
     print("\n\033[93mLoading dataframe...\033[0m")
+
+    # Initialisation of dataframe
     products = None
     list_df = []
 

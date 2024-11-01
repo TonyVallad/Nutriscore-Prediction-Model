@@ -16,6 +16,16 @@ from config import Config
 from app.modules.clean_csv import read_csv_chunks
 
 def load_and_preprocess_data():
+    """
+    Loads the preprocessed data from the cleaned CSV file and encodes categorical variables using
+    LabelEncoder and OrdinalEncoder.
+
+    Returns:
+        df (pandas.DataFrame): The preprocessed DataFrame
+        label_encoder_pnns (sklearn.preprocessing.LabelEncoder): The LabelEncoder object for 'pnns_groups_1'
+        ordinal_encoder_grade (sklearn.preprocessing.OrdinalEncoder): The OrdinalEncoder object for 'nutriscore_grade'
+    """
+
     # Load the dataset using read_csv_chunks function and concatenate all chunks into a single DataFrame
     df_chunks = read_csv_chunks(Config.CLEANED_CSV_FULL_PATH, Config.COLS_FOR_MODEL, Config.CHUNK_SIZE)
     df = pd.concat(df_chunks, ignore_index=True)
@@ -31,6 +41,16 @@ def load_and_preprocess_data():
     return df, label_encoder_pnns, ordinal_encoder_grade
 
 def train_model(df, label_encoder_pnns, ordinal_encoder_grade):
+    """
+    Trains a machine learning model (RandomForestClassifier in this case) using the preprocessed data.
+
+    Prints detailed information about the training DataFrame columns, splits the dataset into training and testing sets,
+    normalizes the features, prints the training AI model, trains the model, evaluates the model, generates the confusion
+    matrix, and plots the confusion matrix with labels.
+
+    Saves the model, encoders, and scaler in 'app/ai-model'.
+    """
+
     # Separate features and target variable
     X = df.drop(columns="nutriscore_grade")
     y = df['nutriscore_grade'].ravel()  # Convert target to 1D array
@@ -84,6 +104,25 @@ def train_model(df, label_encoder_pnns, ordinal_encoder_grade):
     save_model_and_encoders(model, scaler, label_encoder_pnns, ordinal_encoder_grade)
 
 def save_model_and_encoders(model, scaler, label_encoder_pnns, ordinal_encoder_grade):
+    """
+    Save the trained model and encoders to the 'app/ai-model' directory.
+
+    Parameters
+    ----------
+    model : sklearn.ensemble.RandomForestClassifier
+        The trained model.
+    scaler : sklearn.preprocessing.StandardScaler
+        The scaler object.
+    label_encoder_pnns : sklearn.preprocessing.LabelEncoder
+        The label encoder for PNNS (Product Name in Native language).
+    ordinal_encoder_grade : sklearn.preprocessing.OrdinalEncoder
+        The ordinal encoder for the grade (A, B, C, D, E).
+
+    Returns
+    -------
+    None
+    """
+
     # Create the directory if it doesn't exist
     save_dir = os.path.join('app', 'ai-model')
     os.makedirs(save_dir, exist_ok=True)
@@ -96,6 +135,7 @@ def save_model_and_encoders(model, scaler, label_encoder_pnns, ordinal_encoder_g
 
     print(f"\033[93mModel and encoders saved to '{save_dir}'\033[0m\n")
 
+# Handles direct execution of this script
 if __name__ == "__main__":
     # Load and preprocess the data
     df, label_encoder_pnns, ordinal_encoder_grade = load_and_preprocess_data()

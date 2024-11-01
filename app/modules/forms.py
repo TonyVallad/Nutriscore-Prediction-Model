@@ -3,13 +3,6 @@ from wtforms import StringField, DecimalField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Optional, NumberRange
 
 class NutriScoreForm(FlaskForm):
-    """
-    NutriScoreForm
-    --------------
-
-    A FlaskForm for collecting nutritional information about a product
-    to predict its NutriScore.
-    """
     product_name = StringField('Product Name', validators=[DataRequired()])
     
     # Main food group as a dropdown list
