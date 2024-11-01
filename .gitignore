@@ -168,7 +168,3 @@ app/ai-model/
 app/static/openfoodfact_clean.csv
 app/static/Confusion Matrix.png
 app/static/loading.webp
-
-# Test files to ignore
-app/modules/test_ai_models.py
-app/modules/test_ai_models_with_pipelines.py
