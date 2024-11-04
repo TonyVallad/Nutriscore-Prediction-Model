@@ -73,7 +73,15 @@ def train_model(df, label_encoder_pnns, ordinal_encoder_grade):
     print("\033[93mTraining AI model...\033[0m\n")
 
     # Train a model (RandomForestClassifier in this case)
-    model = RandomForestClassifier(random_state=42, verbose=1)
+    model = RandomForestClassifier(
+        random_state=42,
+        bootstrap = False,
+        max_depth = 30,
+        min_samples_leaf = 1,
+        min_samples_split = 5,
+        n_estimators = 300,
+        verbose = 1,
+        n_jobs=-1)
     model.fit(X_train_scaled, y_train)
 
     # Evaluate the model
