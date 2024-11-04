@@ -17,11 +17,12 @@ This project is a machine learning application designed to predict the Nutri-Sco
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Model Details](#model-details)
-5. [Technologies Used](#technologies-used)
-6. [Project Structure](#project-structure)
-7. [How the Project Works](#how-the-project-works)
-8. [Future Improvements](#future-improvements)
+4. [API Usage](#api-usage)
+5. [Model Details](#model-details)
+6. [Technologies Used](#technologies-used)
+7. [Project Structure](#project-structure)
+8. [How the Project Works](#how-the-project-works)
+9. [Future Improvements](#future-improvements)
 
 ---
 
@@ -72,6 +73,46 @@ This project is a machine learning application designed to predict the Nutri-Sco
 ![Front-end Screenshot](app/static/screenshot-data.png)
 
 ![Front-end Screenshot](app/static/screenshot-form.png)
+
+---
+
+### **API Usage**
+
+The project includes an API endpoint for making Nutri-Score predictions. This allows for easy integration with other applications or external services.
+
+- **Endpoint**: `/api/v1/predict-nutriscore`
+- **Method**: `POST`
+- **Content-Type**: `application/json`
+
+#### Example JSON Payload:
+
+```json
+{
+    "pnns_groups_1": "Sugary snacks",
+    "energy-kcal_100g": 500,
+    "fat_100g": 25,
+    "saturated-fat_100g": 10,
+    "sugars_100g": 40,
+    "fiber_100g": 5,
+    "proteins_100g": 6,
+    "salt_100g": 0.5,
+    "sodium_100g": 0.2,
+    "fruits-vegetables-nuts-estimate-from-ingredients_100g": 15
+}
+```
+
+#### Response
+
+The API will return a JSON response containing the predicted Nutri-Score grade based on the input values.
+
+Example:
+```json
+{
+    "nutriscore_grade": "e"
+}
+```
+
+Use this API to make Nutri-Score predictions programmatically by sending a POST request with the required nutritional data.
 
 ---
 
