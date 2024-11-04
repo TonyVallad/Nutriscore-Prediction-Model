@@ -62,6 +62,13 @@ This project is a machine learning application designed to predict the Nutri-Sco
 - Start the application and navigate to `http://127.0.0.1:5000/` in your browser.
 - Use the interface to explore product data and predict Nutri-Score grades.
 
+#### Key Routes
+
+- **Homepage (`/`)**: Displays an introductory page with navigation options.
+- **API Prediction Endpoint (`/api/v1/predict-nutriscore`)**: Allows users to make predictions via a separate API route.
+- **Product Listing (`/training_data`)**: Browse and search products with pagination and filters.
+- **Search Data**: Filter products based on categories and Nutri-Score grades.
+
 ![Front-end Screenshot](app/static/screenshot-data.png)
 
 ![Front-end Screenshot](app/static/screenshot-form.png)
@@ -90,7 +97,7 @@ Nutriscore-Prediction-Model/
 │
 ├── app/
 │   ├── ai-model/            # Model and related files
-│   ├── modules/             # Core application modules (routes, data processing, etc.)
+│   ├── routes/              # Core application routes (split by functionality)
 │   ├── static/              # Static assets (CSV data, images, CSS)
 │   ├── templates/           # HTML templates
 │   ├── __init__.py          # Application factory
@@ -113,9 +120,9 @@ Nutriscore-Prediction-Model/
 
 ### **Future Improvements**
 
-- **Implement API**: Adding endpoints for Nutri-Score predictions and data management.
-- **Enhanced Data Preparation**: Improve handling of missing values, scaling, and feature engineering.
-- **UI Improvements**: Enhance the prediction form and improve the display of results.
+- **Enhanced API**: Extend the API for more comprehensive Nutri-Score predictions and data management.
+- **Improved Data Preparation**: Enhance missing value handling, scaling, and feature engineering.
+- **UI Enhancements**: Refine the prediction form and results display.
 
 ---
 
