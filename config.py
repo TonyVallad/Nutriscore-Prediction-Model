@@ -123,6 +123,7 @@ class Config:
         "fruits-vegetables-nuts-estimate-from-ingredients_100g",
         "nutriscore_grade"
     ]
+    MODEL_PATH = "app/ai-model/model.pkl"
     DIRECTORY_PATH = "../static/"
     OUTPUT_NAME = 'openfoodfact_clean.csv'
     NUTRI_OK = ["a", "b", "c", "d", "e"]
