@@ -23,7 +23,7 @@ def training_data():
     # Checks if the dataframe is already loaded
     if 'PRODUCTS_DF' not in current_app.config:
         # Send to a 'Loading dataframe' template
-        return redirect(url_for('main_bp.loading_data'))
+        return redirect(url_for('main.loading_data'))
 
     # Retrieve the products DataFrame from the app config
     products = current_app.config['PRODUCTS_DF']

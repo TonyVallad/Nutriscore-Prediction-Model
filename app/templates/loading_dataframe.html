@@ -35,7 +35,7 @@
             .then(data => {
                 console.log(data);
                 if (data.complete) {
-                    window.location.href = "{{ url_for('main.training_data') }}";
+                    window.location.href = "{{ url_for('product_bp.training_data') }}";
                 } else {
                     setTimeout(checkTaskStatus, 1000); // Check again after 1 second
                 }
