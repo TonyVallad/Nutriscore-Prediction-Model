@@ -163,6 +163,7 @@ Nutriscore-Prediction-Model/
 
 - **Enhanced API**: Extend the API for more comprehensive Nutri-Score predictions and data management.
 - **Improved Data Preparation**: Enhance missing value handling, scaling, and feature engineering.
+- **Simplify Data Exploration**: Regroup training_data and search_results templates into one template.
 - **UI Enhancements**: Refine the prediction form and results display.
 
 ---
