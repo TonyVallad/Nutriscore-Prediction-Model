@@ -1,5 +1,8 @@
-from flask import Flask
 from config import Config
+from flask import Flask
+from app.routes.main_routes import main_bp as main
+from app.routes.api_routes import api_bp
+from app.routes.product_routes import product_bp
 
 def create_app():
     """
@@ -13,11 +16,9 @@ def create_app():
     # Initialize the loading status
     app.config['loading_dataframe_status'] = {"complete": False}
 
-    # Import and register blueprints
-    from app.modules.routes import main
+    # Register blueprints
     app.register_blueprint(main)
-
-    from app.modules.api_routes import api_bp
     app.register_blueprint(api_bp)
+    app.register_blueprint(product_bp)
 
     return app

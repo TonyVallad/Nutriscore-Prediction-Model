@@ -1,5 +1,5 @@
 <div class="sidebar p-3" style="text-align: center;">
-    <form method="POST" action="{{ url_for('main.search') }}">
+    <form method="POST" action="{{ url_for('product_bp.search') }}">
         <button type="submit" class="btn btn-primary mb-3 w-100">Search Data</button>
     </form>
     <h2>Categories</h2>
@@ -7,7 +7,7 @@
         <!-- List of categories (will be dynamically generated) -->
         {% for cat in cat_list %}
             <li class="list-group-item">
-                <a href="{{ url_for('main.search_results', pnns_groups_1=cat, submitted='true') }}" class="text-decoration-none">{{ cat }}</a>
+                <a href="{{ url_for('product_bp.search_results', pnns_groups_1=cat, submitted='true') }}" class="text-decoration-none">{{ cat }}</a>
             </li>
         {% endfor %}
     </ul>
@@ -16,19 +16,19 @@
     <ul class="list-group sidebar-list">
         <!-- List of Nutriscore Grades -->
         <li class="list-group-item">
-            <a href="{{ url_for('main.search_results', nutriscore_grades='a', submitted='true') }}" class="text-decoration-none">Grade A</a>
+            <a href="{{ url_for('product_bp.search_results', nutriscore_grades='a', submitted='true') }}" class="text-decoration-none">Grade A</a>
         </li>
         <li class="list-group-item">
-            <a href="{{ url_for('main.search_results', nutriscore_grades='b', submitted='true') }}" class="text-decoration-none">Grade B</a>
+            <a href="{{ url_for('product_bp.search_results', nutriscore_grades='b', submitted='true') }}" class="text-decoration-none">Grade B</a>
         </li>
         <li class="list-group-item">
-            <a href="{{ url_for('main.search_results', nutriscore_grades='c', submitted='true') }}" class="text-decoration-none">Grade C</a>
+            <a href="{{ url_for('product_bp.search_results', nutriscore_grades='c', submitted='true') }}" class="text-decoration-none">Grade C</a>
         </li>
         <li class="list-group-item">
-            <a href="{{ url_for('main.search_results', nutriscore_grades='d', submitted='true') }}" class="text-decoration-none">Grade D</a>
+            <a href="{{ url_for('product_bp.search_results', nutriscore_grades='d', submitted='true') }}" class="text-decoration-none">Grade D</a>
         </li>
         <li class="list-group-item">
-            <a href="{{ url_for('main.search_results', nutriscore_grades='e', submitted='true') }}" class="text-decoration-none">Grade E</a>
+            <a href="{{ url_for('product_bp.search_results', nutriscore_grades='e', submitted='true') }}" class="text-decoration-none">Grade E</a>
         </li>
     </ul>
 </div>
