@@ -2,15 +2,18 @@ from flask import Blueprint, request, jsonify
 import joblib
 from config import Config
 import pandas as pd
+import os
 
 # Define the blueprint for the API
 api_bp = Blueprint('api_bp', __name__)
 
 # Load your model
-model = joblib.load(Config.MODEL_PATH)
-label_encoder_pnns = joblib.load('app/ai-model/label_encoder_pnns.pkl')
-ordinal_encoder_grade = joblib.load('app/ai-model/ordinal_encoder_grade.pkl')
-scaler = joblib.load('app/ai-model/scaler.pkl')
+# Checks if the model exists
+if os.path.exists(Config.MODEL_PATH):
+    model = joblib.load(Config.MODEL_PATH)
+    label_encoder_pnns = joblib.load('app/ai-model/label_encoder_pnns.pkl')
+    ordinal_encoder_grade = joblib.load('app/ai-model/ordinal_encoder_grade.pkl')
+    scaler = joblib.load('app/ai-model/scaler.pkl')
 
 @api_bp.route('/api/v1/predict-nutriscore', methods=['POST'])
 def predict_nutriscore():
