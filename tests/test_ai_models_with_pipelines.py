@@ -1,4 +1,4 @@
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -92,11 +92,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # List of models to test in pipelines
 models = [
-    RandomForestClassifier(n_estimators=100, random_state=42, verbose=1),
-    LogisticRegression(max_iter=2000, random_state=42, verbose=1),
+    RandomForestClassifier(n_estimators=100, random_state=42, verbose=1, n_jobs=-1),
+    LogisticRegression(max_iter=2000, random_state=42, verbose=1, n_jobs=-1),
     SVC(kernel="linear", max_iter=20000, random_state=42, verbose=True),
-    KNeighborsClassifier(n_neighbors=5),
-    GradientBoostingClassifier(random_state=42, verbose=1)
+    KNeighborsClassifier(n_neighbors=5, n_jobs=-1),
+    GradientBoostingClassifier(random_state=42, verbose=1),
+    HistGradientBoostingClassifier(random_state=42, verbose=1)
 ]
 
 # Run models and evaluate
