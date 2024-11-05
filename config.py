@@ -47,16 +47,20 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///nutriscore.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DB_NAME = "nutriscore.db"
+
     APP_STATIC_PATH = "app/static/"
     DB_FULL_PATH = 'instance/' + DB_NAME
     TABLE_NAME = "produits"
+
     ORIGINAL_CSV_NAME = "en.openfoodfacts.org.products.csv"
     CLEANED_CSV_NAME = "openfoodfact_clean.csv"
     CLEANED_100G_CSV_NAME = "100g_clean.csv"
     ORIGINAL_CSV_FULL_PATH = APP_STATIC_PATH + ORIGINAL_CSV_NAME
     CLEANED_CSV_FULL_PATH = APP_STATIC_PATH + CLEANED_CSV_NAME
+
     CHUNK_SIZE = 10000
     VIEW_NAME = 'products_view'
+
     SELECTED_COLS = [
         "code",
         "product_name",
@@ -123,9 +127,13 @@ class Config:
         "fruits-vegetables-nuts-estimate-from-ingredients_100g",
         "nutriscore_grade"
     ]
+
     MODEL_PATH = "app/ai-model/model.pkl"
+    ShowGraphs = False  # Set to True to show graphs during model training
+
     DIRECTORY_PATH = "../static/"
     OUTPUT_NAME = 'openfoodfact_clean.csv'
+
     NUTRI_OK = ["a", "b", "c", "d", "e"]
     COUNTRIES_EN_COL = "countries_en"
     COUNTRIES_EN_API_URL = "https://restcountries.com/v3.1/all"

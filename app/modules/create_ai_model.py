@@ -1,12 +1,15 @@
 import os
 import sys
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder, OrdinalEncoder
+from sklearn.model_selection import train_test_split, learning_curve
+from sklearn.preprocessing import StandardScaler, LabelEncoder, OrdinalEncoder, label_binarize
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, accuracy_score, mean_absolute_error, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import classification_report, accuracy_score, mean_absolute_error, confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc, precision_recall_curve, average_precision_score
+from sklearn.multiclass import OneVsRestClassifier
+from itertools import cycle
 import joblib
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 
 # Adjust the path to access the config file from the root directory
@@ -14,6 +17,152 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 
 from config import Config
 from app.modules.clean_csv import read_csv_chunks
+
+def prepare_multiclass_outputs(model, X_test, y_test, classes):
+    """
+    Binarizes y_test and calculates predicted probabilities (y_score) for multi-class outputs.
+    
+    Parameters:
+    - model: The trained classifier.
+    - X_test: Scaled test features.
+    - y_test: True labels for the test set.
+    - classes: List of unique class labels for binarization.
+    
+    Returns:
+    - y_test_binarized: Binarized test labels.
+    - y_score: Predicted probabilities for each class.
+    """
+
+    # Ensure y_test is a valid array-like input for label_binarize
+    y_test_binarized = label_binarize(y_test, classes=classes)
+    y_score = model.predict_proba(X_test)  # Get predicted probabilities
+
+    return y_test_binarized, y_score
+
+def plot_confusion_matrix(y_train, y_train_pred):
+    """
+    Plots the confusion matrix for the training predictions.
+    """
+
+    print("\n\033[93mGenerating Confusion Matrix...\033[0m\n")
+
+    cm = confusion_matrix(y_train, y_train_pred)
+    
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
+    plt.xlabel("Predicted Labels")
+    plt.ylabel("True Labels")
+    plt.title("Confusion Matrix")
+    plt.show()
+    
+    print("\n\033[94mConfusion Matrix:\033[0m\n", cm, "\n")
+
+def plot_roc_curve(y_test_binarized, y_score, n_classes, grade_labels):
+    """
+    Plots the ROC curve for each Nutri-Score grade based on binarized y_test and y_score.
+    
+    Parameters:
+    - y_test_binarized: Binarized test labels.
+    - y_score: Predicted probabilities.
+    - n_classes: Number of classes (Nutri-Score grades).
+    - grade_labels: Labels for each grade (from ordinal_encoder_grade).
+    """
+
+    print("\n\033[93mGenerating ROC Curve...\033[0m\n")
+
+    # Compute ROC curve and ROC area for each grade
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    for i in range(n_classes):
+        fpr[i], tpr[i], _ = roc_curve(y_test_binarized[:, i], y_score[:, i])
+        roc_auc[i] = auc(fpr[i], tpr[i])
+
+    plt.figure(figsize=(10, 8))
+    colors = cycle(['aqua', 'darkorange', 'cornflowerblue', 'lime', 'purple'])
+    for i, color in zip(range(n_classes), colors):
+        plt.plot(fpr[i], tpr[i], color=color, lw=2,
+                 label=f'ROC curve (grade {grade_labels[i]}) (area = {roc_auc[i]:.2f})')
+    plt.plot([0, 1], [0, 1], 'k--', lw=2)
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve for Each Nutri-Score Grade')
+    plt.legend(loc="lower right")
+    plt.show()
+
+def plot_feature_importance(model, feature_names):
+    """
+    Plots the feature importance for the RandomForestClassifier model.
+    """
+
+    print("\n\033[93mGenerating Feature Importance...\033[0m\n")
+
+    importances = model.feature_importances_
+    indices = np.argsort(importances)[::-1]
+    
+    plt.figure(figsize=(10, 6))
+    plt.title("Feature Importance")
+    plt.bar(range(len(feature_names)), importances[indices], align="center")
+    plt.xticks(range(len(feature_names)), np.array(feature_names)[indices], rotation=90)
+    plt.xlabel("Features")
+    plt.ylabel("Importance Score")
+    plt.show()
+
+def plot_precision_recall(y_test_binarized, y_score, n_classes, grade_labels):
+    """
+    Plots the Precision-Recall curve for each class.
+    
+    Parameters:
+    - y_test_binarized: Binarized labels for the test set.
+    - y_score: Predicted probabilities.
+    - n_classes: Number of classes (Nutri-Score grades).
+    - grade_labels: Labels for each grade (from ordinal_encoder_grade).
+    """
+
+    print("\n\033[93mGenerating Precision-Recall Curve...\033[0m\n")
+
+    precision = dict()
+    recall = dict()
+    average_precision = dict()
+    
+    for i in range(n_classes):
+        precision[i], recall[i], _ = precision_recall_curve(y_test_binarized[:, i], y_score[:, i])
+        average_precision[i] = average_precision_score(y_test_binarized[:, i], y_score[:, i])
+
+    plt.figure(figsize=(10, 8))
+    colors = cycle(['aqua', 'darkorange', 'cornflowerblue', 'lime', 'purple'])
+    for i, color in zip(range(n_classes), colors):
+        plt.plot(recall[i], precision[i], color=color, lw=2,
+                 label=f'Precision-Recall curve (grade {grade_labels[i]}) (area = {average_precision[i]:.2f})')
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curve for Each Nutri-Score Grade")
+    plt.legend(loc="lower left")
+    plt.show()
+
+def plot_learning_curve(model, X, y):
+    """
+    Plots the learning curve to evaluate if the model is overfitting or underfitting.
+    """
+
+    print("\n\033[93mGenerating Learning Curve...\033[0m\n")
+
+    train_sizes, train_scores, test_scores = learning_curve(
+        model, X, y, cv=5, n_jobs=-1, train_sizes=np.linspace(0.1, 1.0, 10)
+    )
+    train_scores_mean = np.mean(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+
+    plt.figure(figsize=(10, 8))
+    plt.plot(train_sizes, train_scores_mean, 'o-', label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', label="Test score")
+    plt.xlabel("Training Size")
+    plt.ylabel("Score")
+    plt.title("Learning Curve")
+    plt.legend(loc="best")
+    plt.show()
 
 def load_and_preprocess_data():
     """
@@ -94,19 +243,25 @@ def train_model(df, label_encoder_pnns, ordinal_encoder_grade):
     # Predict the training or test set labels
     y_train_pred = model.predict(X_train_scaled)
 
-    # Generate the confusion matrix
-    cm = confusion_matrix(y_train, y_train_pred)
+    # Generate graphs if enabled in config
+    if Config.ShowGraphs:
+        # Plot Confusion Matrix
+        plot_confusion_matrix(y_train, y_train_pred)
 
-    # Plot the confusion matrix with labels
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
-    plt.xlabel("Predicted Labels")
-    plt.ylabel("True Labels")
-    plt.title("Confusion Matrix")
-    plt.show()
+        # Prepare multiclass outputs for ROC and Precision-Recall curves
+        y_test_binarized, y_score = prepare_multiclass_outputs(model, X_test_scaled, y_test, classes=[0, 1, 2, 3, 4])
 
-    # Display the confusion matrix
-    print("\n\033[94mConfusion Matrix:\033[0m\n", cm, "\n")
+        # Plot ROC Curve
+        plot_roc_curve(y_test_binarized, y_score, len(ordinal_encoder_grade.categories_[0]), ordinal_encoder_grade.categories_[0])
+
+        # Plot Feature Importance
+        plot_feature_importance(model, X.columns)
+
+        # Plot Precision-Recall Curve
+        plot_precision_recall(y_test_binarized, y_score, len(ordinal_encoder_grade.categories_[0]), ordinal_encoder_grade.categories_[0])
+
+        # Plot Learning Curve
+        #plot_learning_curve(model, X_train_scaled, y_train)
 
     # Save the model, encoders, and scaler in 'app/ai-model'
     save_model_and_encoders(model, scaler, label_encoder_pnns, ordinal_encoder_grade)
@@ -141,7 +296,7 @@ def save_model_and_encoders(model, scaler, label_encoder_pnns, ordinal_encoder_g
     joblib.dump(label_encoder_pnns, os.path.join(save_dir, 'label_encoder_pnns.pkl'))
     joblib.dump(ordinal_encoder_grade, os.path.join(save_dir, 'ordinal_encoder_grade.pkl'))
 
-    print(f"\033[93mModel and encoders saved to '{save_dir}'\033[0m\n")
+    print(f"\n\033[92mModel and encoders saved to '{save_dir}'\033[0m\n")
 
 # Handles direct execution of this script
 if __name__ == "__main__":

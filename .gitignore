@@ -165,6 +165,5 @@ cython_debug/
 app/ai-model/
 
 # Files in static to ignore
+app/static/local/
 app/static/openfoodfact_clean.csv
-app/static/Confusion Matrix.png
-app/static/loading.webp
