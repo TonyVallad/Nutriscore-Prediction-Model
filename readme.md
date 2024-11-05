@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README_fr.md">Français</a>
+  <a href="readme.md">English</a> | <a href="readme_fr.md">Français</a>
 </p>
 
 This project is a machine learning application designed to predict the Nutri-Score of food products based on various nutritional data. The application is developed in Python with a Flask-based interface, enabling local predictions and a dynamic web-based display of product data.
