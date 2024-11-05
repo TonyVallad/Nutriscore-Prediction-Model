@@ -4,6 +4,10 @@
   <img src="app/static/logo.png" alt="Nutri-Score Logo">
 </p>
 
+<p align="center">
+  <a href="README.md">English</a> | <a href="README_fr.md">Français</a>
+</p>
+
 This project is a machine learning application designed to predict the Nutri-Score of food products based on various nutritional data. The application is developed in Python with a Flask-based interface, enabling local predictions and a dynamic web-based display of product data.
 
 ---
@@ -116,9 +120,35 @@ Use this API to make Nutri-Score predictions programmatically by sending a POST 
 
 ---
 
-### **Model Details**
+### Model Details
 
-The application uses a RandomForestClassifier by default, but you can experiment with additional models by updating `create_ai_model.py`. The trained model is saved in `app/ai-model/`.
+The application uses a `RandomForestClassifier` as the default model with the following configuration:
+
+- **Random State**: `42`  
+  Ensures reproducibility by controlling the randomness. Setting a fixed random state allows the model to produce the same results each time it’s trained.
+
+- **Bootstrap**: `False`  
+  When set to `False`, the model uses the entire dataset to build each tree rather than random sampling with replacement. This may lead to higher variance but can improve accuracy in some cases.
+
+- **Max Depth**: `30`  
+  Limits the maximum depth of each decision tree in the forest. A value of `30` restricts the tree growth, helping to prevent overfitting by reducing the model complexity.
+
+- **Min Samples Leaf**: `1`  
+  Sets the minimum number of samples required to be at a leaf node (a terminal node of the tree). With `1`, each leaf can represent a single sample, which can capture more detailed patterns in the data but might increase the risk of overfitting.
+
+- **Min Samples Split**: `5`  
+  Specifies the minimum number of samples required to split a node. A value of `5` means that nodes with fewer than 5 samples will not be split, helping control tree growth and reduce overfitting.
+
+- **Number of Estimators**: `300`  
+  Indicates the number of trees in the forest. With `300` estimators, the model is more robust, as it aggregates the predictions of more individual trees, improving generalization but also increasing computational requirements.
+
+- **Verbose**: `1`  
+  Controls the level of detail displayed in the console during training. A setting of `1` provides updates on the training progress, which can be useful for tracking longer training times with multiple trees.
+
+- **Number of Jobs**: `-1`  
+  Specifies the number of CPU cores used for training. Setting this to `-1` uses all available processors, speeding up the training process, especially for larger datasets.
+
+You can experiment with additional models by updating `create_ai_model.py`. The trained model is saved in `app/ai-model/`, allowing for seamless integration and deployment within the application.
 
 ---
 
@@ -161,10 +191,11 @@ Nutriscore-Prediction-Model/
 
 ### **Future Improvements**
 
-- **Enhanced API**: Extend the API for more comprehensive Nutri-Score predictions and data management.
-- **Improved Data Preparation**: Enhance missing value handling, scaling, and feature engineering.
-- **Simplify Data Exploration**: Regroup training_data and search_results templates into one template.
-- **UI Enhancements**: Refine the prediction form and results display.
+- **Enhanced API**: Extend the API for more comprehensive Nutri-Score predictions and data management, including handling model information and status to monitor model performance and availability.
+- **Statistics Template**: Add a dedicated template to display various graphs and metrics about the current model, as well as comparisons with other tested models.
+- **Improved Data Preparation**: Enhance missing value handling, scaling, and feature engineering for cleaner, more robust input data.
+- **Simplify Data Exploration**: Merge the `training_data` and `search_results` templates into a single template to streamline data exploration.
+- **UI Enhancements**: Refine the prediction form and results display for a more user-friendly experience.
 
 ---
 
