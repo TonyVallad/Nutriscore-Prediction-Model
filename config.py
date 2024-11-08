@@ -130,6 +130,7 @@ class Config:
 
     MODEL_PATH = "app/ai-model/model.pkl"
     ShowGraphs = False  # Set to True to show graphs during model training
+    ShowVerbose = False  # Set to True to show details during model training
 
     DIRECTORY_PATH = "../static/"
     OUTPUT_NAME = 'openfoodfact_clean.csv'

@@ -75,14 +75,16 @@ def evaluate_model(pipeline, X_train, X_test, y_train, y_test):
     print("\033[94mMean Absolute Error (MAE):\033[0m", mae)
     print("\033[94mMean Absolute Percentage Error (MAPE):\033[0m", mape, "%\n")
 
-    # Plot confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
-    plt.figure(figsize=(6, 4))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
-    plt.title(f"Confusion Matrix - {pipeline.named_steps['classifier'].__class__.__name__}")
-    plt.xlabel("Predicted")
-    plt.ylabel("Actual")
-    plt.show()
+    # Generate graphs if enabled in config
+    if Config.ShowGraphs:
+        # Plot confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        plt.figure(figsize=(6, 4))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False)
+        plt.title(f"Confusion Matrix - {pipeline.named_steps['classifier'].__class__.__name__}")
+        plt.xlabel("Predicted")
+        plt.ylabel("Actual")
+        plt.show()
 
 # Prepare data and split
 df = load_data()
@@ -90,14 +92,20 @@ X = df.drop(columns="nutriscore_grade")
 y = OrdinalEncoder(categories=[['e', 'd', 'c', 'b', 'a']]).fit_transform(df[['nutriscore_grade']]).ravel()
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+# Verbose settings
+if Config.ShowVerbose:
+    VerboseValue = 1
+else:
+    VerboseValue = 0
+
 # List of models to test in pipelines
 models = [
-    RandomForestClassifier(n_estimators=100, random_state=42, verbose=1, n_jobs=-1),
-    LogisticRegression(max_iter=2000, random_state=42, verbose=1, n_jobs=-1),
-    SVC(kernel="linear", max_iter=20000, random_state=42, verbose=True),
+    RandomForestClassifier(n_estimators=100, random_state=42, verbose=VerboseValue, n_jobs=-1),
+    LogisticRegression(max_iter=2000, random_state=42, verbose=VerboseValue, n_jobs=-1),
+    SVC(kernel="linear", max_iter=20000, random_state=42, verbose=Config.ShowVerbose),
     KNeighborsClassifier(n_neighbors=5, n_jobs=-1),
-    GradientBoostingClassifier(random_state=42, verbose=1),
-    HistGradientBoostingClassifier(random_state=42, verbose=1)
+    GradientBoostingClassifier(random_state=42, verbose=VerboseValue),
+    HistGradientBoostingClassifier(random_state=42, verbose=VerboseValue)
 ]
 
 # Run models and evaluate
